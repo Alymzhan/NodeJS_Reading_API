@@ -6,6 +6,16 @@ var http = require('http');
 var unirest = require('unirest');
 const fs = require('fs')
 
+//let's clean old file if exists: "inprocess.json"
+const path = './inprocess.json'
+try {
+  fs.unlinkSync(path)
+  //file removed
+} catch(err) {
+  console.error(err)
+}
+
+
 var req = unirest('GET', 'https://api.bomfusion.ctechmanufacturing.com/api/batches/in-process')
   .end(function (res) { 
     if (res.error) throw new Error(res.error); 
@@ -32,6 +42,12 @@ var req = unirest('GET', 'https://api.bomfusion.ctechmanufacturing.com/api/batch
                 if (job.Itemid.match(/FLAT_TOP.*/)) 
                 { 
                   res.write(job.Itemid + ": <a href=\"https://toekick.ctechmanufacturing.com/BOMDB/GetProject?projectNumber=" + job.ProjectNumber + "\" target=\"_blank\" rel=\"noopener noreferrer\"> ProjectNumber: "+job.ProjectNumber+"</a>"); 
+                  res.write("<br />");
+                } 
+
+                if (job.TypeOf.match(/slide/) && job.Description.match(/Heavy Duty*/)) 
+                { 
+                  res.write(job.Description + ": <a href=\"https://toekick.ctechmanufacturing.com/BOMDB/GetProject?projectNumber=" + job.ProjectNumber + "\" target=\"_blank\" rel=\"noopener noreferrer\"> ProjectNumber: "+job.ProjectNumber+"</a>"); 
                   res.write("<br />");
                 } 
               }
